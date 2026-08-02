@@ -14,7 +14,7 @@ tidy:
 	@go mod tidy
 
 test:
-	@go test ./... -v
+	@go test ./... -v -cover
 
 clean:
 	@rm -rf ./bin
