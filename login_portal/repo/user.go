@@ -91,6 +91,27 @@ func (u *User) FindUserByID(id int) (model.User, error) {
 	return model.User{}, ErrUserNotFound
 }
 
+// method untuk mencari user berdasarkan username
+// mengembalikan nilai (model.User, error)
+
+func (u *User) FindUserByUsername(username string) (model.User, error) {
+	u.mu.RLock()
+	defer u.mu.RUnlock()
+
+	// loop sampai mendapatkan username yang sesuai
+	for i := range u.data {
+		if u.data[i].Username == username {
+
+			// kembalikan data user ketika sudah ditemukan
+			return u.data[i], nil
+		}
+	}
+
+	// kalau sampai di sini, harusnya user dengan username
+	// yang diminta tidak ditemukan 😃
+	return model.User{}, ErrUserNotFound
+}
+
 // method untuk update data user
 
 func (u *User) Update(id int, p UserUpdatePayload) error {
