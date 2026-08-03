@@ -75,6 +75,33 @@ func (u *User) GetUserByID(id int) (model.User, error) {
 	return user, nil
 }
 
+// method untuk update profile
+func (u *User) Edit(id int, p repo.UserUpdatePayload) error {
+	payload := repo.UserUpdatePayload{}
+
+	if p.Password != nil && len(*p.Password) > 8 {
+		hash, err := hashPassword(*p.Password)
+		if err != nil {
+			return err
+		}
+		payload.Password = new(hash)
+	}
+
+	if p.Username != nil && len(*p.Username) > 3 {
+		payload.Username = p.Username
+	}
+
+	if p.FirstName != nil {
+		payload.FirstName = p.FirstName
+	}
+
+	if p.LastName != nil {
+		payload.LastName = p.LastName
+	}
+
+	return u.userRepo.Update(id, payload)
+}
+
 // fungsi kecil untuk hash dan check password
 func hashPassword(p string) (string, error) {
 	b, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.DefaultCost)

@@ -1,19 +1,56 @@
 package view
 
-import "login_portal/model"
+import (
+	"login_portal/model"
+	"path/filepath"
+	"strconv"
+	"strings"
+)
 
-templ Dashboard(user model.User) {
+templ Dashboard(user model.User, CSRFToken string) {
 	<h1>Hi! { user.Username }</h1>
+	<a href="/logout" hx-get="/logout" hx-target="#root" hx-swap="innerHTML">Logout</a>
+	@Profile(user, CSRFToken)
+}
+
+templ Profile(user model.User, CSRFToken string) {
 	<table>
 		<tr>
-			<th>Username</th>
-			<th>First Name</th>
-			<th>Last Name</th>
+			<th><label for="username">Username</label></th>
+			<th><label for="password">Password</label></th>
+			<th><label for="first-name">First Name</label></th>
+			<th><label for="last-name">Last Name</label></th>
 		</tr>
 		<tr>
 			<td>{ user.Username }</td>
+			<td>{ strings.Repeat("*", 8) }</td>
 			<td>{ user.Profile.FirstName }</td>
 			<td>{ user.Profile.LastName }</td>
 		</tr>
+		<tr>
+			@EditForm("username", "text", user.ID, CSRFToken)
+			@EditForm("password", "password", user.ID, CSRFToken)
+			@EditForm("first-name", "text", user.ID, CSRFToken)
+			@EditForm("last-name", "text", user.ID, CSRFToken)
+		</tr>
 	</table>
+	<style type="text/css">
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 8px;
+  }
+</style>
+}
+
+templ EditForm(id, typ string, userID int, CSRFToken string) {
+	<td>
+		<form hx-post={ filepath.Join("/user", strconv.Itoa(userID), "edit") } hx-target="#root" hx-swap="innerHTML">
+			<input type="hidden" name="csrf-token" id="csrf-token" value={ CSRFToken }/>
+			<input type={ typ } name={ id } id={ id }/>
+			<button type="submit">Save</button>
+		</form>
+	</td>
 }
