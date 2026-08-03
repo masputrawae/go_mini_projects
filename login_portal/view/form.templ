@@ -1,0 +1,27 @@
+package view
+
+templ Login(err error) {
+	@FormAuth("Login", "/login", err)
+}
+
+templ Register(err error) {
+	@FormAuth("Register", "/register", err)
+}
+
+templ FormAuth(title, action string, err error) {
+	<h2>{ title }</h2>
+	<form hx-post={ action } hx-target="#root" hx-swap="innerHTML">
+		<div>
+			<label for="username">Username</label>
+			<input type="text" name="username" id="username" required/>
+		</div>
+		<div>
+			<label for="password">Password</label>
+			<input type="password" name="password" id="password" required/>
+		</div>
+		<button>{ title }</button>
+	</form>
+	if err != nil {
+		<p style="color: red;">{ err.Error() }</p>
+	}
+}
