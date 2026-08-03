@@ -1,0 +1,3 @@
+bin
+*_templ.go
+app.db
